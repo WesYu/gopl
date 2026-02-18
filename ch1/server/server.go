@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/wesyu/gopl/ch1/lissajous"
@@ -53,7 +54,24 @@ func Server3() {
 
 func Exercise_1_12() {
 	http.HandleFunc("/lissajous", func(w http.ResponseWriter, r *http.Request) {
-		lissajous.Lissajous(w)
+		var opts []lissajous.Option
+		q := r.URL.Query()
+		if cycles, err := strconv.Atoi(q.Get("cycles")); err == nil {
+			opts = append(opts, lissajous.WithCycles(cycles))
+		}
+		if res, err := strconv.ParseFloat(q.Get("resolution"), 64); err == nil {
+			opts = append(opts, lissajous.WithResolution(res))
+		}
+		if size, err := strconv.Atoi(q.Get("size")); err == nil {
+			opts = append(opts, lissajous.WithSize(size))
+		}
+		if nframes, err := strconv.Atoi(q.Get("nframes")); err == nil {
+			opts = append(opts, lissajous.WithNFrames(nframes))
+		}
+		if delay, err := strconv.Atoi(q.Get("delay")); err == nil {
+			opts = append(opts, lissajous.WithDelay(delay))
+		}
+		lissajous.Lissajous(w, opts...)
 	})
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
