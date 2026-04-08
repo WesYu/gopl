@@ -9,47 +9,8 @@ import (
 	"math/rand"
 )
 
-type Config struct {
-	cycles     int     // number of complete x oscillator revolutions
-	resolution float64 // angular resolution
-	size       int     // image canvas covers [-size...+size]
-	nframes    int     // number of animation frames
-	delay      int     // delay between frames in 10ms units
-}
-
-type Option func(*Config)
-
-func WithCycles(cycles int) Option {
-	return func(c *Config) {
-		c.cycles = cycles
-	}
-}
-
-func WithResolution(resolution float64) Option {
-	return func(c *Config) {
-		c.resolution = resolution
-	}
-}
-
-func WithSize(size int) Option {
-	return func(c *Config) {
-		c.size = size
-	}
-}
-
-func WithNFrames(nframes int) Option {
-	return func(c *Config) {
-		c.nframes = nframes
-	}
-}
-
-func WithDelay(delay int) Option {
-	return func(c *Config) {
-		c.delay = delay
-	}
-}
-
-func Lissajous(out io.Writer, opts ...Option) {
+// Generates GIF animations of random Lissajous figures.
+func Generate(out io.Writer, opts ...Option) {
 	cfg := &Config{
 		cycles:     5,
 		resolution: 0.001,
@@ -95,4 +56,44 @@ func Lissajous(out io.Writer, opts ...Option) {
 		anim.Image = append(anim.Image, img)
 	}
 	gif.EncodeAll(out, &anim) // NOTE: ignoring encoding errors
+}
+
+type Config struct {
+	cycles     int     // number of complete x oscillator revolutions
+	resolution float64 // angular resolution
+	size       int     // image canvas covers [-size...+size]
+	nframes    int     // number of animation frames
+	delay      int     // delay between frames in 10ms units
+}
+
+type Option func(*Config)
+
+func WithCycles(cycles int) Option {
+	return func(c *Config) {
+		c.cycles = cycles
+	}
+}
+
+func WithResolution(resolution float64) Option {
+	return func(c *Config) {
+		c.resolution = resolution
+	}
+}
+
+func WithSize(size int) Option {
+	return func(c *Config) {
+		c.size = size
+	}
+}
+
+func WithNFrames(nframes int) Option {
+	return func(c *Config) {
+		c.nframes = nframes
+	}
+}
+
+func WithDelay(delay int) Option {
+	return func(c *Config) {
+		c.delay = delay
+	}
 }

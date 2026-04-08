@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Prints the content found at a URL.
 func Fetch() {
 	for _, url := range os.Args[1:] {
 		resp, err := http.Get(url)
@@ -29,7 +30,7 @@ func Fetch() {
 
 // Exercise 1.7: Use io.Copy to copy the response body to os.Stdout without
 // requiring a buffer large enough to hold the entire stream.
-func Exercise_1_7() {
+func FetchWithoutBuffer() {
 	for _, url := range os.Args[1:] {
 		resp, err := http.Get(url)
 		if err != nil {
@@ -45,7 +46,7 @@ func Exercise_1_7() {
 }
 
 // Exercise 1.8: Add the prefix http:// to each argument URL if it is missing.
-func Exercise_1_8() {
+func FetchWithMissingPrefix() {
 	for _, url := range os.Args[1:] {
 		const httpPrefix = "http://"
 		if !strings.HasPrefix(url, httpPrefix) {
@@ -65,7 +66,7 @@ func Exercise_1_8() {
 }
 
 // Exercise 1.9: Also print the HTTP status code, found in resp.Status
-func Exercise_1_9() {
+func FetchWithStatusCode() {
 	for _, url := range os.Args[1:] {
 		const httpPrefix = "http://"
 		if !strings.HasPrefix(url, httpPrefix) {
@@ -115,7 +116,7 @@ func FetchAll() {
 
 // Exercise 1.10: print the output to a file to see if two consecutive requests
 // return the same result
-func Exercise_1_10() {
+func FetchToFile() {
 	start := time.Now()
 	ch := make(chan string)
 	for _, rawUrl := range os.Args[1:] {

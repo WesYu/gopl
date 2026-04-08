@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/wesyu/gopl/ch1/lissajous"
+	"github.com/wesyu/gopl/ch3/surface"
 )
 
 func Server1() {
@@ -52,7 +53,8 @@ func Server3() {
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func Exercise_1_12() {
+// Exercise 1.12: Serves a lissajous gif.
+func Lissajous() {
 	http.HandleFunc("/lissajous", func(w http.ResponseWriter, r *http.Request) {
 		var opts []lissajous.Option
 		q := r.URL.Query()
@@ -71,7 +73,47 @@ func Exercise_1_12() {
 		if delay, err := strconv.Atoi(q.Get("delay")); err == nil {
 			opts = append(opts, lissajous.WithDelay(delay))
 		}
-		lissajous.Lissajous(w, opts...)
+		lissajous.Generate(w, opts...)
+	})
+	log.Fatal(http.ListenAndServe(":8000", nil))
+}
+
+// Exercise 3.4: Serve a surface svg.
+func Surface() {
+	http.HandleFunc("/surface", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/svg+xml")
+		var opts []surface.Option
+		q := r.URL.Query()
+		if width, err := strconv.Atoi(q.Get("width")); err == nil {
+			opts = append(opts, surface.WithWidth(width))
+		}
+		if height, err := strconv.Atoi(q.Get("height")); err == nil {
+			opts = append(opts, surface.WithHeight(height))
+		}
+		if cells, err := strconv.Atoi(q.Get("cells")); err == nil {
+			opts = append(opts, surface.WithCells(cells))
+		}
+		if xyrange, err := strconv.ParseFloat(q.Get("xyrange"), 64); err == nil {
+			opts = append(opts, surface.WithXYRange(xyrange))
+		}
+		if angle, err := strconv.ParseFloat(q.Get("angle"), 64); err == nil {
+			opts = append(opts, surface.WithAngleDegree(angle))
+		}
+		if color := q.Get("color"); len(color) == 6 {
+			ri, err1 := strconv.ParseUint(color[0:2], 16, 8)
+			gi, err2 := strconv.ParseUint(color[2:4], 16, 8)
+			bi, err3 := strconv.ParseUint(color[4:6], 16, 8)
+			if err1 == nil && err2 == nil && err3 == nil {
+				opts = append(opts, surface.WithRed(uint8(ri)))
+				opts = append(opts, surface.WithGreen(uint8(gi)))
+				opts = append(opts, surface.WithBlue(uint8(bi)))
+			}
+		}
+		if fn := q.Get("function"); fn != "" {
+			opts = append(opts, surface.WithFunction(fn))
+		}
+		cfg := surface.NewConfig(opts...)
+		cfg.CreateSVG("f", w)
 	})
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
